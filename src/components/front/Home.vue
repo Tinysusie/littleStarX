@@ -3,6 +3,7 @@
     {{msg}}
     <x-nav></x-nav>
     <router-view/>
+    
   </div>
 </template>
 

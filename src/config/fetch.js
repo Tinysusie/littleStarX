@@ -17,7 +17,7 @@ export default async(url = '',data ={}, type='POST',  formData="",method ='fetch
 
         if(window.fetch && method == 'fetch'){
             let requestConfig = {
-                credentials :'include',
+                credentials :'include', //?【此设置什么意思，打开就不可以正常跨域】【S】res.header("Access-Control-Allow-Credentials",true)
                 method:type,
                 headers:{
                     'Accept': 'application/json',

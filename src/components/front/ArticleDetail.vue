@@ -1,7 +1,7 @@
 <template>
   <div class="">
       <div v-if="postObj.hasOwnProperty('title')">
-        <h3>{{postObj.title}} <router-link :to="{path:'articleList'}"> << </router-link></h3>
+        <h3>{{postObj.title}} <router-link :to="{path:'articleList'}"> 回 </router-link></h3>
         <p>{{postObj.time}} {{postObj.author}} {{postObj.count}}</p>
         <section>{{postObj.subtitle}}</section>
         <hr>
