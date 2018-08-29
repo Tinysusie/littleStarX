@@ -7,4 +7,7 @@ export default {
     getPostDetail(data) {
         return fetch('/article/getPost',data)
     },
+    addPost(data) {
+        return fetch('/article/addPost',data)
+    }
 } 

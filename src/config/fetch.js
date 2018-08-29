@@ -14,8 +14,13 @@ export default async(url = '',data ={}, type='POST',  formData="",method ='fetch
                 url = url + '?' + dataStr;
             }
         }
-
-        if(window.fetch && method == 'fetch'){
+//multipart/form-data [文件] 二进制
+//application/x-www-form-urlencoded [] 数据被编码为名称/值对。这是标准的编码格式。 request.getParameter(参数名);
+//text/plain 数据以纯文本形式(text/json/xml/html)进行编码，其中不含任何控件或格式字符 【application/json？】
+//form的enctype属性为编码方式，
+//常用有两种：application/x-www-form-urlencoded和multipart/form-data，默认为application/x-www-form-urlencoded
+       
+if(window.fetch && method == 'fetch'){
             let requestConfig = {
                 credentials :'include', //?【此设置什么意思，打开就不可以正常跨域】【S】res.header("Access-Control-Allow-Credentials",true)
                 method:type,
@@ -32,7 +37,7 @@ export default async(url = '',data ={}, type='POST',  formData="",method ='fetch
                 if(formData == 'formData'){
                     // requestConfig.headers = { 
                     //     'Accept': 'multipart/form-data',
-                    //     'Content-Type': 'multipart/form-data'
+                    //     'Content-Type': 'multipart/form-data' 
                     // };
                     requestConfig.body = data
                 }else {

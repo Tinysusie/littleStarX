@@ -7,7 +7,7 @@
       <h3>{{item.title}}</h3>
       <p>{{item.time}} {{item.author}} {{item.count}}</p>
       <section>{{item.subtitle}}</section>
-      <router-link :to="{path:'articleDetail',query:{id:item.id}}">more...</router-link>
+      <router-link :to="{path:'articleDetail',query:{id:item._id}}">more...</router-link>
       
     </div>
     
@@ -41,7 +41,7 @@ export default {
     
     getData(){
       let param = {
-
+        id:"kj"
       }
       ArticleAPI.getArticle(param)
       .then(data =>{

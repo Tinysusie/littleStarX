@@ -3,34 +3,38 @@
     <router-link :to="{path:'/articleList'}">去前台</router-link>
     <div>
     {{msg}}
+    <h3><el-input v-model="editorTitle" placeholder="标题"></el-input></h3>
     <div ref="editor"></div>
     <p></p>
-    <!-- <form action="/littleStar/upload" enctype="multipart/form-data" method="post">
-      <input type="file" name="pic">
+    <form action="/littleStar/upload" enctype="multipart/form-data" method="post">
+      <input type="file" multiple="multiple" name="pic1">
       <button type="submit">submit</button>
-    </form> -->
+    </form>
     <el-button v-on:click="saveContent" size="small">保存内容</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import PostAPI from '../../api/front'
 import E from 'wangeditor'
 export default {
   name: 'editPost',
   data () {
     return {
       msg: '编辑',
+      editorTitle:"",
       editorContent:'',
     }
   },
   mounted:function(){
     let editor = new E(this.$refs.editor);
     editor.customConfig.uploadImgServer = '/littleStar/upload'
+    editor.customConfig.uploadFileName = 'pic1';
     editor.customConfig.withCredentials = true
-    editor.customConfig.uploadImgHeaders = {
-     "Content-Type":"multipart/form-data; boundary=23156412"
-    }
+    editor.customConfig.uploadImgHeaders = { //【头不要设置！！Content-Type: multipart/form-data】？
+       // 'Accept' : 'multipart/form-data'//
+    };
     editor.customConfig.onchange = (html) => {
         this.editorContent = html
     }
@@ -38,7 +42,15 @@ export default {
   },
   methods:{
     saveContent(){
-      console.log(this.editorContent)
+      let postObj = {
+        title:this.editorTitle,
+        content:this.editorContent
+      }
+      PostAPI.addPost(postObj)
+      .then(result =>{
+        this.$message.success("add success")
+        console.log(result)
+      }).catch(err=>{})
     }
   }
   
