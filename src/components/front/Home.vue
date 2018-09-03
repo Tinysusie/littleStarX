@@ -1,8 +1,9 @@
 <template>
   <div class="">
-    {{msg}}
     <x-nav></x-nav>
-    <router-view/>
+    <div class="page-content">
+      <router-view/>
+    </div>
     
   </div>
 </template>
@@ -24,5 +25,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.page-content {
+  padding: 0 20px;
+}
 </style>

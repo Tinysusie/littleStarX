@@ -1,3 +1,11 @@
+<style>
+body,
+*{
+  box-sizing: border-box;
+  font-family: 'Hind', sans-serif!important;
+}
+</style>
+
 <template>
   <div id="app">
     <!-- <img src="./assets/logo.png"> -->
@@ -7,6 +15,7 @@
 </template>
 
 <script>
+import 'reset-css';
 export default {
   name: 'App',
   data(){
@@ -20,7 +29,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
