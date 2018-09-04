@@ -1,14 +1,13 @@
 <template>
   <div class="">
-    <!-- <button @click="getInfoByJSONP()">HI</button>
+    <button @click="getInfoByJSONP()">HI</button>
       {{JsonPData.msg}}
       <router-link :to="{path:'/manage'}">后台管理</router-link>
-      <hr> -->
+      <hr>
       <div class="masonry-layout">
         <div v-for="item in dataList" :key="item.id" class="masonry-grid post-item">
           <div class="post-item-inner">
-            
-            <img :src="'../../../static/img/'+ Math.round(Math.random()*3+1) +'.jpg'">
+            <img :src="item.mainImg">
             <h3 class="post-title">{{item.title}}</h3>
             <p>{{item.time}} {{item.author}} {{item.count}}</p>
             <section>{{item.subtitle}}</section>
@@ -35,8 +34,15 @@ export default {
   },
   mounted:function(){
     this.getData();
-    window.addEventListener('resize',this.styleMasonry)
-    
+    //window.addEventListener('resize',this.styleMasonry)
+    window.onresize = _=>{
+      setTimeout(_=>{
+        this.styleMasonry()
+      },0)
+    }
+  },
+  beforeDestroy:function(){
+    window.onresize = null
   },
   methods:{
     getInfoByJSONP(){
@@ -55,43 +61,56 @@ export default {
       ArticleAPI.getArticle(param)
       .then(data =>{
         this.dataList = data.data
-        this.$nextTick(_=>{
-          this.styleMasonry();
-        })
+        this.preLoadImg();
+        
       }).catch(e =>{
        //console.log(e)
       })
     },
+    preLoadImg(){
+      // for(let i=0;i<this.dataList.length;i++){
+      //   let imgsrc = '../../../static/img/'+ Math.round(Math.random()*3+1) +'.jpg'
+      //   let imgObj = new Image();
+      //   imgObj.src = imgsrc
+      //   imgObj.onload = _=>{
+      //     this.$set(this.dataList[i],"img",imgsrc) 
+      //   }
+      // }
+      this.styleMasonry()
+    },
     styleMasonry(){
-      let grid = 3;
+      //let grid = 3;
       let posts = document.querySelectorAll('.masonry-grid');
-      let postW = posts[0].offsetWidth;
-      let winCW = document.documentElement.offsetWidth - 40; 
-      let cellW = parseInt(winCW/grid);
+      let postW = Math.floor(posts[0].offsetWidth);
+      let PW = document.querySelector('.masonry-layout')
+      let winCW = PW.offsetWidth; 
+      let grid = Math.round(winCW/postW)
+      //console.log(winCW,postW,grid)
+      //let cellW = parseInt(winCW/grid);
       let arr = []; //记录最矮的一个
-      for(let i=0;i<posts.length;i++){
-        if(i < grid){ //row 1
-          posts[i].style.top = 0;
-          posts[i].style.left = cellW * i + 'px';
-          arr.push(posts[i].offsetHeight);
-        }else { //row other
-          var minH = arr[0];
-          var index = 0;
-          for(let j = 0;j<arr.length;j++){ //find minH
-            if(minH > arr[j]){
-              minH = arr[j]
-              index = j;
+      for(let i=0;i<this.dataList.length;i++){
+          if(i < grid){ //row 1
+            posts[i].style.top = 0;
+            posts[i].style.left = postW * i + 'px';
+            arr.push(posts[i].offsetHeight);
+            
+          }else { //row other
+            var minH = arr[0];
+            var index = 0;
+            for(let j = 0;j<arr.length;j++){ //find minH
+              if(minH > arr[j]){
+                minH = arr[j]
+                index = j;
+              }
             }
+            //console.log(i,index)
+            posts[i].style.top = arr[index] + 'px' 
+            posts[i].style.left = posts[index].offsetLeft + 'px'  //== style.left(带有px) 相对于其父元素的值
+            arr[index] = arr[index] + posts[i].offsetHeight;
+            
           }
-          //console.log(i,index)
-          posts[i].style.top = arr[index] + 'px' 
-          posts[i].style.left = posts[index].offsetLeft + 'px'  //== style.left(带有px) 相对于其父元素的值
-          arr[index] = arr[index] + posts[i].offsetHeight;
-          
-        }
-        
       }
-    }
+    },
   }
 }
 </script>
@@ -106,12 +125,13 @@ export default {
 }
 .masonry-grid{
   position: absolute;
-  transition: all 0.3s;
+  transition: top,left 0.3s;
   top:0;
   left:0;
 }
 .post-item{
-  display: inline-block;
+  float: left;
+  /* display: inline-block; */
   padding: 15px 10px 20px 10px;
   width: 33.3%;
   line-height: 30px;
@@ -132,5 +152,41 @@ export default {
 }
 .post-item-inner{
 
+  word-break: break-all;
+  word-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .page-content{
+    padding: 0 30px;
+
+  }
+  .post-item{
+    width: 100%
+  }
+}
+@media (min-width: 480px) {
+  .page-content{
+    padding: 0 50px;
+  }
+  .post-item{
+    width: 50%
+  }
+}
+@media (min-width: 992px) {
+  .page-content{
+
+  }
+  .post-item{
+    width: 33.3%
+  }
+}
+@media (min-width: 1200px) {
+  .page-content{
+    max-width: 1200px;
+  }
+  .post-item{
+    width: 25%
+  }
+  
 }
 </style>

@@ -8,3 +8,4 @@ module.exports = {
         "http://localhost:3000/upload/019.gif",
     ]
 }
+

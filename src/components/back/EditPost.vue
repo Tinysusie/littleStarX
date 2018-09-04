@@ -32,7 +32,7 @@ export default {
     editor.customConfig.uploadImgServer = '/littleStar/upload'
     editor.customConfig.uploadFileName = 'pic1';
     editor.customConfig.withCredentials = true
-    editor.customConfig.uploadImgHeaders = { //【头不要设置！！Content-Type: multipart/form-data】？
+    editor.customConfig.uploadImgHeaders = { //【头不要设置！！Content-Type: multipart/form-data】formdata 自动设置类型maybe ？
        // 'Accept' : 'multipart/form-data'//
     };
     editor.customConfig.onchange = (html) => {
@@ -42,14 +42,22 @@ export default {
   },
   methods:{
     saveContent(){
+      let contentImg = [],firSrc = '';
+      let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+      contentImg = this.editorContent.match(/<img[^>]+>/g)
+      if(contentImg.length>0){
+        firSrc= contentImg[0].match(srcReg);
+      }
+      //console.log(firSrc)
       let postObj = {
         title:this.editorTitle,
-        content:this.editorContent
+        content:this.editorContent,
+        mainImg:firSrc[1]
       }
       PostAPI.addPost(postObj)
       .then(result =>{
         this.$message.success("add success")
-        console.log(result)
+        //console.log(result)
       }).catch(err=>{})
     }
   }

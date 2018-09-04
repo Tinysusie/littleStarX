@@ -8,6 +8,7 @@ var app = express(),
    // multipart = require('connect-multiparty');  
 var DB = require('./db');
 var ResCls = require('./data/resClass')
+var uploadCls = require('./data/resClass/upload.js')
 var ObjectId = require('mongodb').ObjectId;
 
 var projectName = "/littleStar" ;
@@ -51,7 +52,7 @@ app.use('*',function(req,res,next){ //* 匹配放最后
     next();
     
 })
-app.post('/littleStar/upload',upload.array('pic1',10),function(req,res,next){
+app.post('/upload',upload.array('pic1',10),function(req,res,next){
     handleUpload(req,res);
 })
 
@@ -92,6 +93,7 @@ app.post('/article/addPost',function(req,res){
             title:atc.title,
             subtitle:'SUBTITLE',
             content:atc.content,
+            mainImg:atc.mainImg,
             author:"ADMIN",
             posttatus:'1',
             category:'1',
@@ -135,7 +137,7 @@ app.use('*',function(req,res){ //* 匹配放最后
 
 function handleUpload(request,response){
     var files = request.files;
-    //console.log(file)
+    console.log(files)
     var imgAry = []
     files.forEach(file => {
         var mime = file.originalname.split('.').pop();
@@ -146,7 +148,8 @@ function handleUpload(request,response){
         "errno": 0,
         "data": imgAry
     }
-    response.send(res);
+    let resData = uploadCls(res)
+    response.send(JSON.stringify(resData));
 }
 function handleReq(request,response){
     let method = request.method.toLowerCase()
