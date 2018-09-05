@@ -1,11 +1,13 @@
 <template>
-  <div class="">
-      <div v-if="postObj.hasOwnProperty('title')">
-        <h3>{{postObj.title}} <router-link :to="{path:'articleList'}"> 回 </router-link></h3>
-        <p>{{postObj.time}} {{postObj.author}} {{postObj.count}}</p>
-        <section>{{postObj.subtitle}}</section>
-        <hr>
-        <div v-html="postObj.content"></div>
+  <div class="post-page">
+      <div v-if="postObj.hasOwnProperty('title')" class="post-body">
+        <h2 class="post-title">{{postObj.title}}</h2>
+          <router-link tag="button" class="el-button el-button--text el-button-text" :to="{path:'articleList'}"><i class="el-icon-back"></i></router-link>
+        <p class="post-info">BY {{postObj.author}}，{{$moment(postObj.time).format('YYYY/MM/DD HH:mm')}}，{{postObj.count}}</p>
+        
+        <!-- <section class="post-subtitle">{{postObj.subtitle}}</section> -->
+       
+        <p class="post-content" v-html="postObj.content"></p>
       </div>
   </div>
 </template>
@@ -43,5 +45,27 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.post-body{
+  text-align: center;
+  max-width: 770PX;
+  margin: 0 auto;
+  color: #717171;
+  font-size: 13px;
+}
+.post-body>*{
+  margin-bottom: 15px;
+}
+.post-page .post-title{
+  display: inline-block;
+  font-weight: bold;
+  color: #333;
+  font-size: 18px;
+}
+.post-info{
+  font-size:12px; 
+}
+.post-content {
+  text-align: left;
+  line-height: 32px;
+}
 </style>

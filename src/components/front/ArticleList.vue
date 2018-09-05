@@ -1,17 +1,29 @@
 <template>
   <div class="">
-    <button @click="getInfoByJSONP()">HI</button>
-      {{JsonPData.msg}}
+    <!-- <button @click="getInfoByJSONP()">HI</button> -->
+      <!-- {{JsonPData.msg}}
       <router-link :to="{path:'/manage'}">后台管理</router-link>
-      <hr>
+      <hr> -->
       <div class="masonry-layout">
         <div v-for="item in dataList" :key="item.id" class="masonry-grid post-item">
           <div class="post-item-inner">
-            <img :src="item.mainImg">
-            <h3 class="post-title">{{item.title}}</h3>
-            <p>{{item.time}} {{item.author}} {{item.count}}</p>
-            <section>{{item.subtitle}}</section>
-            <router-link :to="{path:'articleDetail',query:{id:item._id}}">MORE...</router-link>
+            <img class="entry-img" :src="item.mainImg">
+            <div class="entry-content">
+              <h3 class="post-title">{{item.title}}</h3>
+              
+              <p class="post-info">BY {{item.author}}，{{$moment(item.time).format('YYYY/MM/DD HH:mm')}} </p>
+              <!-- <section>{{item.subtitle}}</section> -->
+              <section class="post-subtitle" v-html="item.content"></section>
+              
+                
+              <div class="admin-action">
+                <router-link tag="button" class="el-button el-button--text el-button--small" 
+                :to="{path:'EditPost',query:{type:1,id:item._id}}"><i class="el-icon-edit"></i>Edit</router-link>
+                <el-button type="text" size="mini" @click="delPost(item._id)"><i class="el-icon-delete"></i>Del</el-button>
+                <router-link tag="button" class="el-button el-button--text el-button--small more" 
+                :to="{path:'articleDetail',query:{id:item._id}}"> More <i class="el-icon-more"></i></router-link>
+              </div>
+            </div>
           </div>
           
         </div>
@@ -53,7 +65,26 @@ export default {
       })
 
     },
-    
+    delPost(id){
+     // this.$confirm('确定删除吗？','删除',{
+      //  type:'warning'
+    //}).then(_=>{
+        let param = {
+          id:id
+        }
+        ArticleAPI.delPost(param)
+        .then(data =>{
+          this.getData();
+          this.$message.success('del')
+          
+        }).catch(err=>{
+          if(err.code==2){
+            this.$message.error('del error')
+          }
+        })
+      //}).catch(_=>{})
+      
+    },
     getData(){
       let param = {
         id:"kj"
@@ -61,7 +92,9 @@ export default {
       ArticleAPI.getArticle(param)
       .then(data =>{
         this.dataList = data.data
-        this.preLoadImg();
+        this.$nextTick(_=>{
+          this.preLoadImg();
+        })
         
       }).catch(e =>{
        //console.log(e)
@@ -76,7 +109,9 @@ export default {
       //     this.$set(this.dataList[i],"img",imgsrc) 
       //   }
       // }
-      this.styleMasonry()
+      //this.$nextTick(_=>{
+        this.styleMasonry()
+      //})
     },
     styleMasonry(){
       //let grid = 3;
@@ -105,7 +140,7 @@ export default {
             }
             //console.log(i,index)
             posts[i].style.top = arr[index] + 'px' 
-            posts[i].style.left = posts[index].offsetLeft + 'px'  //== style.left(带有px) 相对于其父元素的值
+            posts[i].style.left = posts[index].style.left  //== style.left(带有px) 相对于其父元素的值
             arr[index] = arr[index] + posts[i].offsetHeight;
             
           }
@@ -129,31 +164,65 @@ export default {
   top:0;
   left:0;
 }
+.entry-content {
+  padding: 0 25px;
+}
+.post-info{
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
 .post-item{
   float: left;
   /* display: inline-block; */
   padding: 15px 10px 20px 10px;
   width: 33.3%;
-  line-height: 30px;
+  line-height: 32px;
   color: #717171;
   letter-spacing: 0.225px;
   font-size: 14px;
   /* border:1px solid #eee; */
 }
+.post-subtitle{ 
+  margin: 0 auto 30px;
+  max-height: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-action{
+  text-align: center;
+  padding:0 10px; 
+  
+}
+
 .post-item .post-title {
   font-size: 16px;
   font-weight: bold;
-  color: #444;
-  margin: 8px 0;
+  color: #333;
+  padding: 10px 0;
+  position: relative;
+  margin-bottom: 15px;
+}
+.post-item .post-title::after{
+  content: '';
+  display: block;
+  position: absolute;
+  width: 40px;
+  height: 2px;
+  background: #cecece;
+  left:50%;
+  bottom: 0px;
+  transform: translateX(-50%)
+
 }
 .post-item-inner img {
   max-width: 100%;
   max-height: 100%;
 }
 .post-item-inner{
-
-  word-break: break-all;
-  word-wrap: wrap;
+  text-align: center;
+  /* word-break: break-all; */
+  /* word-wrap: wrap; */
 }
 @media (max-width: 480px) {
   .page-content{

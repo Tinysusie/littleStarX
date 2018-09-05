@@ -9,5 +9,12 @@ export default {
     },
     addPost(data) {
         return fetch('/article/addPost',data)
+    },
+    updatePost(data) {
+        return fetch('/article/updatePost',data)
+    },
+    delPost(data){
+        return fetch('/article/delPost',data)
     }
+    
 } 

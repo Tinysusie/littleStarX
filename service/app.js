@@ -94,7 +94,7 @@ app.post('/article/addPost',function(req,res){
             subtitle:'SUBTITLE',
             content:atc.content,
             mainImg:atc.mainImg,
-            author:"ADMIN",
+            author:randomName(),
             posttatus:'1',
             category:'1',
             time:new Date(),
@@ -111,12 +111,66 @@ app.post('/article/addPost',function(req,res){
         })
     }else {
         //msg = 'Opps,nothing can be found'
-        resData = ResCls({})
+        resData = ResCls({code:2,msg:'add error'})
         res.send(JSON.stringify(resData))
     }
     
 })
+app.post('/article/updatePost',function(req,res){
+    let resData = {}
+    if(req.body && req.body.title && req.body.id){
+        let atc = req.body
+        let id = ObjectId(req.body.id);
+        let targetId = {'_id':id}
 
+        let postObj = {
+            title:atc.title,
+            subtitle:'SUBTITLE',
+            content:atc.content,
+            mainImg:atc.mainImg,
+            author:randomName(),
+            posttatus:'1',
+            category:'1',
+            time:new Date(),
+            count:3015,
+        }
+        DB.updateMany('post',targetId,{$set:postObj},function(err,result){
+            if (err) throw err;
+            let Obj = {
+                msg : "update success!"
+            }
+            resData = ResCls(Obj)
+            res.send(JSON.stringify(resData))
+        })
+    }else if(!req.body.id){
+        resData = ResCls({code:3,msg:'no id '}) //无id
+        res.send(JSON.stringify(resData))
+    }else{
+        //msg = 'Opps,nothing can be found'
+        resData = ResCls({code:2,msg:'add error'}) //其他错误
+        res.send(JSON.stringify(resData))
+    }
+})
+app.post('/article/delPost',function(req,res) {
+    let resData = {}
+    console.log(req.body.id)
+    if(req.body.id){
+        let id = ObjectId(req.body.id);
+        let targetId = {'_id':id}
+        DB.delete('post',targetId,function(err,result){
+            if(err) throw err;
+            let Obj = {
+                msg:'del success'
+            }
+            resData = ResCls(Obj)
+            res.send(JSON.stringify(resData))
+        })
+    }else {
+        resData = ResCls({code:2,msg:'del error'})//删除出错code码
+        console.log(resData)
+        res.send(JSON.stringify(resData))
+    }
+})
 
 app.use('*',function(req,res){ //* 匹配放最后
     if(req.url.indexOf('static')<0){
@@ -135,6 +189,12 @@ app.use('*',function(req,res){ //* 匹配放最后
     
 })
 
+function randomName(){
+    let nameArr = ['SUSIE','LIDA','JIACHENG','HEBE','ELLE'];
+    let mun = Math.floor(Math.random()*5);
+    console.log(nameArr[mun])
+    return nameArr[mun]
+}
 function handleUpload(request,response){
     var files = request.files;
     console.log(files)

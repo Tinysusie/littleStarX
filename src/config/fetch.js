@@ -1,4 +1,5 @@
 import {baseUrl} from './env.js'
+import { Message } from 'element-ui';
 
 export default async(url = '',data ={}, type='POST',  formData="",method ='fetch') => {
     //console.log(data,type)
@@ -50,14 +51,27 @@ if(window.fetch && method == 'fetch'){
                 //console.log(url)
                 const response = await fetch(url, requestConfig);
                 const responseJson = await response.json();
-                if(responseJson.success == false){
-                    throw "自定义错误"
+               
+                if(responseJson.login == false){
+                    //进行页面跳转
+                    throw "未登录" 
+                } else if(responseJson.success == false){
+                    //console.log("1")
+                    Message.error("系统错误统一处理")
+                    throw "自定义错误"       //【此处不进行throw处理的话，会直接进到then里？】
                     //自定义统一错误处理(登录错误、超时错误...)
-                }else {
+                } else if (responseJson.code !== 0){ //与后台定义的非正确数据code码//将业务具体错误抛给里边处理
+                    //console.log("2")
+                    throw responseJson
+                } else if(responseJson.success && responseJson.login){
+                    //console.log("3")
                    return responseJson
                 }
             } catch(error){
-                throw new Error(error)
+                //console.log("统一错误")
+                //console.log(error)
+                //throw new Error(error) 【】?
+                throw error
             }
         }
 

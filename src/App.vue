@@ -4,6 +4,9 @@ body,
   box-sizing: border-box;
   font-family: 'Hind', sans-serif!important;
 }
+.page-content {
+  padding: 0 20px;
+}
 </style>
 
 <template>

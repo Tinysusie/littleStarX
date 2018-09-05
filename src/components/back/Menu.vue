@@ -1,8 +1,8 @@
 <template>
   <div class="">
     <ul>
-      <router-link tag="li" :to="{path:'/editPost'}" class="">新增</router-link>
-      <router-link tag="li" :to="{path:'/editPost'}" class="">列表</router-link>
+      <!-- <router-link tag="li" :to="{path:'/editPost'}" class="">新增</router-link>
+      <router-link tag="li" :to="{path:'/editPost'}" class="">列表</router-link> -->
     </ul>
   </div>
 </template>

@@ -1,7 +1,9 @@
 <template>
   <div class="">
     <back-nav></back-nav>
-    <router-view />
+    <div class="page-content">
+      <router-view />
+    </div>
   </div>
 </template>
 
