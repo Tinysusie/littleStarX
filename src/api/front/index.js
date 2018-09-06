@@ -15,6 +15,9 @@ export default {
     },
     delPost(data){
         return fetch('/article/delPost',data)
+    },
+    login(data){
+        return fetch('/user/login',data)
     }
     
 } 

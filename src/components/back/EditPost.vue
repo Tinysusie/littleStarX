@@ -6,8 +6,8 @@
     <router-link tag="button" class="el-button el-button--text el-button-text" :to="{path:'articleList'}"><i class="el-icon-back"></i></router-link>
     <div class="edit">
       <h3 class="edit-title"><el-input v-model="editorTitle" size="small" placeholder="标题"></el-input></h3>
+      <div class="edit-tool" ref="editorTool"></div>
       <div class="edit-content" ref="editor"></div>
-      
       <!-- <form action="/littleStar/upload" enctype="multipart/form-data" method="post">
         <input type="file" multiple="multiple" name="pic1">
         <button type="submit">submit</button>
@@ -46,7 +46,7 @@ export default {
   },
   methods:{
     configEditor(){
-      this.editor = new E(this.$refs.editor);
+      this.editor = new E(this.$refs.editorTool,this.$refs.editor);
       this.editor.customConfig.uploadImgServer = '/littleStar/upload'
       this.editor.customConfig.uploadFileName = 'pic1';
       this.editor.customConfig.withCredentials = true
@@ -133,5 +133,13 @@ export default {
 .page-title{
   display: inline-block;
   padding: 15px 0;
+}
+.edit-tool.w-e-toolbar {
+  border:1px solid #dcdfe6;
+  padding: 3px 0
+}
+.edit-content.w-e-text-container{
+  height: 500px!important;
+  border:1px solid #dcdfe6;
 }
 </style>

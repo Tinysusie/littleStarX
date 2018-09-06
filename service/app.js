@@ -6,6 +6,8 @@ var app = express(),
     bodyParser = require("body-parser"),
     multer = require('multer'); 
    // multipart = require('connect-multiparty');  
+var session = require('express-session'),
+    cookieParser = require('cookie-parser');
 var DB = require('./db');
 var ResCls = require('./data/resClass')
 var uploadCls = require('./data/resClass/upload.js')
@@ -15,6 +17,12 @@ var projectName = "/littleStar" ;
 
 var upload = multer({ dest: 'static/uploads/' }) ;
 
+app.use(cookieParser());
+app.use(session({
+   secret:'keyPCat',
+   cookie:{maxAge:6000},
+
+}));
 
 app.use(express.static('static')) 
 app.use(bodyParser.json()); // for parsing application/json
@@ -171,7 +179,54 @@ app.post('/article/delPost',function(req,res) {
         res.send(JSON.stringify(resData))
     }
 })
-
+app.post('/user/login',function(req,res) {
+    let resData = {}
+    
+    console.log(req.body.name)
+    if(req.body.name){
+        let targetName = {'name':req.body.name}
+        DB.find('user',targetName,function(err,result){
+            if (err) throw err;
+            if(!result || result.length==0){
+                let user = {
+                    name:req.body.name,
+                    pass:req.body.pass,
+                }
+                DB.insertOne('user',user,function(err,result){
+                    if (err) throw err;
+                    req.session.user = req.body.name //
+                    let Obj = {
+                        msg : "sign up success"
+                    }
+                    resData = ResCls(Obj)
+                    res.send(JSON.stringify(resData))
+                })
+            }else {
+                let findUser = result[0]
+                if(findUser.pass === req.body.pass){
+                    req.session.user = req.body.name//
+                    let Obj = {
+                        msg : "login success"
+                    }
+                    resData = ResCls(Obj)
+                    res.send(JSON.stringify(resData))
+                }else {
+                    let Obj = {
+                        msg : "pass error",
+                        login:false,
+                        code:2//密码错误code码
+                    }
+                    resData = ResCls(Obj)
+                    res.send(JSON.stringify(resData))
+                }
+            }
+        })
+    }else {
+        resData = ResCls({code:3,msg:'no name'})
+        console.log(resData)
+        res.send(JSON.stringify(resData))
+    }
+})
 app.use('*',function(req,res){ //* 匹配放最后
     if(req.url.indexOf('static')<0){
         if(req.baseUrl.indexOf('/upload')>0){

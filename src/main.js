@@ -7,7 +7,7 @@ import ElemntUI from 'element-ui'
 import moment from 'moment'
 import 'element-ui/lib/theme-chalk/index.css'
 import '../src/config/jsonp.js'
-
+//trim-html
 Vue.config.productionTip = false
 Vue.use(ElemntUI)
 

@@ -1,5 +1,6 @@
 import {baseUrl} from './env.js'
 import { Message } from 'element-ui';
+import $router from '../router/index.js'
 
 export default async(url = '',data ={}, type='POST',  formData="",method ='fetch') => {
     //console.log(data,type)
@@ -54,7 +55,12 @@ if(window.fetch && method == 'fetch'){
                
                 if(responseJson.login == false){
                     //进行页面跳转
-                    throw "未登录" 
+                    if(responseJson.code===2){
+                        Message.error("密码错误")
+                    }else{
+                        $router.push('/login')
+                    }
+                    throw "未登录"
                 } else if(responseJson.success == false){
                     //console.log("1")
                     Message.error("系统错误统一处理")
