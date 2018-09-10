@@ -57,7 +57,11 @@ if(window.fetch && method == 'fetch'){
                     //进行页面跳转
                     if(responseJson.code===2){
                         Message.error("密码错误")
-                    }else{
+                    }else if(responseJson.code===3){
+                        Message.warning("登录超时")
+                        $router.push('/login')
+                    }else {
+                        Message.warning("未登录")
                         $router.push('/login')
                     }
                     throw "未登录"

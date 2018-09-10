@@ -19,10 +19,20 @@ var upload = multer({ dest: 'static/uploads/' }) ;
 
 app.use(cookieParser());
 app.use(session({
-   secret:'keyPCat',
-   cookie:{maxAge:6000},
-
+    //name:'id',
+    secret:'keyPCat',
+    cookie:{maxAge:30000},
+    resave: false,
+    saveUninitialized: false
 }));
+// name: 设置 cookie 中，保存 session 的字段名称，默认为 connect.sid 。
+    // store: session 的存储方式，默认存放在内存中，也可以使用 redis，mongodb 等。Express 生态中都有相应模块的支持。
+    // secret: 通过设置的 secret 字符串，来计算 hash 值并放在 cookie 中，使产生的 signedCookie 防篡改。
+    // cookie: 设置存放 session id 的 cookie 的相关选项，默认为(default: { path: '/', httpOnly: true, secure: false, maxAge: null })
+    // genid: 产生一个新的 session_id 时，所使用的函数， 默认使用 uid2 这个 npm 包。
+    // rolling: 每个请求都重新设置一个 cookie，默认为 false。
+    // resave: 即使 session 没有被修改，也保存 session 值，默认为 true。
+
 
 app.use(express.static('static')) 
 app.use(bodyParser.json()); // for parsing application/json
@@ -57,8 +67,38 @@ app.use('*',function(req,res,next){ //* 匹配放最后
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS,PATCH');
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
+    res.header('Set-Cookie','SSID='+ req.sessionID +'; max-age=120000 ');
     
+    
+    if(req.url.indexOf('static')<0 && req.baseUrl.indexOf('login')<0){
+        
+        let leftTime = req.session.cookie.maxAge
+        //let cookieId = req.session["connect.sid"]
+        let userSessionObj = req.session[req.sessionID]
+        console.log('-----------------------',req.session.login,req.sessionID,req.baseUrl,userSessionObj,leftTime)
+        //if(userSessionObj && userSessionObj.login && leftTime>0){ 
+        if(req.session.login && leftTime>0){ 
+            req.session.touch();
+            next();
+        }else if(req.session && leftTime<=0){
+            let UNloginObj = {
+                login:false,
+                msg:'need login'
+            }
+            let sendata = ResCls(UNloginObj);
+            res.send(JSON.stringify(sendata));
+        }else {
+            let UNloginObj = {
+                login:false,
+                msg:'time out',
+                code:3
+            }
+            let sendata = ResCls(UNloginObj);
+            res.send(JSON.stringify(sendata));
+        }
+    }else {
+        next();
+    }
 })
 app.post('/upload',upload.array('pic1',10),function(req,res,next){
     handleUpload(req,res);
@@ -181,7 +221,7 @@ app.post('/article/delPost',function(req,res) {
 })
 app.post('/user/login',function(req,res) {
     let resData = {}
-    
+    console.log(req.sessionID,req.session.login)
     console.log(req.body.name)
     if(req.body.name){
         let targetName = {'name':req.body.name}
@@ -194,7 +234,10 @@ app.post('/user/login',function(req,res) {
                 }
                 DB.insertOne('user',user,function(err,result){
                     if (err) throw err;
-                    req.session.user = req.body.name //
+                    req.session.login = true
+                    // req.session[req.sessionID] = {}
+                    // req.session[req.sessionID]["login"] = true; //
+                    // req.session[req.sessionID]["name"] = req.body.name;
                     let Obj = {
                         msg : "sign up success"
                     }
@@ -204,7 +247,10 @@ app.post('/user/login',function(req,res) {
             }else {
                 let findUser = result[0]
                 if(findUser.pass === req.body.pass){
-                    req.session.user = req.body.name//
+                    req.session.login = true
+                    // req.session[req.sessionID] = {}
+                    // req.session[req.sessionID]["login"] = true; //【session】
+                    // req.session[req.sessionID]["name"] = req.body.name;
                     let Obj = {
                         msg : "login success"
                     }
