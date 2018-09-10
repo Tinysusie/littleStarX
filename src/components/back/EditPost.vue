@@ -74,6 +74,9 @@ export default {
     },
     saveContent(){
       this.editorContent = this.editor.txt.html();
+      let subTitle = this.editor.txt.text();
+      subTitle = subTitle.substring(0,200)+'...'
+      //console.log(subTitle)
       let contentImg = [],firSrc = '';
       let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
       contentImg = this.editorContent.match(/<img[^>]+>/g)
@@ -86,6 +89,7 @@ export default {
          postObj = {
           id:this.postId,
           title:this.editorTitle,
+          subTitle:subTitle,
           content:this.editorContent,
           mainImg:firSrc[1]
         }
@@ -93,6 +97,7 @@ export default {
       }else {
          postObj = {
           title:this.editorTitle,
+          subTitle:subTitle,
           content:this.editorContent,
           mainImg:firSrc[1]
         }

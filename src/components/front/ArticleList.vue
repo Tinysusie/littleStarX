@@ -1,10 +1,13 @@
 <template>
-  <div class="">
+  <div class="masonry-layout-wrapper">
     <!-- <button @click="getInfoByJSONP()">HI</button> -->
       <!-- {{JsonPData.msg}}
       <router-link :to="{path:'/manage'}">后台管理</router-link>
       <hr> -->
-      <div class="masonry-layout">
+      <div class="masonry-layout" v-loading="postLoading" 
+      element-loading-text="loading"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)">
         <div v-for="item in dataList" :key="item.id" class="masonry-grid post-item">
           <div class="post-item-inner">
             <img class="entry-img" :src="item.mainImg">
@@ -13,7 +16,7 @@
               
               <p class="post-info">BY {{item.author}}，{{$moment(item.time).format('YYYY/MM/DD HH:mm')}} </p>
               <!-- <section>{{item.subtitle}}</section> -->
-              <section class="post-subtitle" v-html="item.content"></section>
+              <section class="post-subtitle" v-html="item.subtitle"></section>
               
                 
               <div class="admin-action">
@@ -42,15 +45,14 @@ export default {
       msg: 'ArticleList',
       dataList:[],
       JsonPData:{},
+      postLoading:false,
     }
   },
   mounted:function(){
     this.getData();
     //window.addEventListener('resize',this.styleMasonry)
     window.onresize = _=>{
-      setTimeout(_=>{
-        this.styleMasonry()
-      },0)
+      this.styleMasonry()
     }
   },
   beforeDestroy:function(){
@@ -86,21 +88,32 @@ export default {
       
     },
     getData(){
+      this.postLoading = true;
       let param = {
         id:"kj"
       }
       ArticleAPI.getArticle(param)
       .then(data =>{
-        this.dataList = data.data
-        this.$nextTick(_=>{
-          this.preLoadImg();
+        // this.dataList = data.data; //直接出内容
+        // this.$nextTick(_=>{
+        //   this.styleMasonry()
+        // });
+        this.preLoadImg(data.data)
+        .then(result=>{
+          if(result.indexOf(false) == -1){
+            this.dataList = data.data;
+            this.$nextTick(_=>{
+              this.styleMasonry();
+              this.postLoading = false;
+            });
+          }
         })
-        
       }).catch(e =>{
        //console.log(e)
+        this.postLoading = false;
       })
     },
-    preLoadImg(){
+    preLoadImg1(){
       // for(let i=0;i<this.dataList.length;i++){
       //   let imgsrc = '../../../static/img/'+ Math.round(Math.random()*3+1) +'.jpg'
       //   let imgObj = new Image();
@@ -112,6 +125,26 @@ export default {
       //this.$nextTick(_=>{
         this.styleMasonry()
       //})
+    },
+    preLoadImg(data){
+      let imgArr = [];
+      return Promise.all( data.map((post,i)=>{
+          imgArr[i] = new Image();
+          imgArr[i].src = post.mainImg;
+          imgArr[i].loaded = false
+          return new Promise((resolve,reject) =>{
+            imgArr[i].onload = _=>{ 
+              imgArr[i].loaded = true
+              //setTimeout(_=>{resolve(imgArr[i].loaded)},1000);
+              resolve(imgArr[i].loaded)
+            }
+            imgArr[i].onerror = _=>{
+              imgArr[i].loaded = true
+              resolve(imgArr[i].loaded)
+            }
+          })
+        })
+      )
     },
     styleMasonry(){
       //let grid = 3;
@@ -145,6 +178,8 @@ export default {
             
           }
       }
+      let wrapperH = Math.max(...arr)
+      PW.style.minHeight = wrapperH + 'px';
     },
   }
 }
@@ -152,6 +187,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.masonry-layout-wrapper{
+  height: 100%;
+}
 .masonry-layout{
   position: relative;
   padding-left: 15px;
@@ -175,9 +213,9 @@ export default {
 .post-item{
   float: left;
   /* display: inline-block; */
-  padding: 15px 10px 20px 10px;
+  padding: 15px 15px 20px;
   width: 33.3%;
-  line-height: 32px;
+  line-height: 30px;
   color: #717171;
   letter-spacing: 0.225px;
   font-size: 14px;
@@ -224,38 +262,5 @@ export default {
   /* word-break: break-all; */
   /* word-wrap: wrap; */
 }
-@media (max-width: 480px) {
-  .page-content{
-    padding: 0 30px;
 
-  }
-  .post-item{
-    width: 100%
-  }
-}
-@media (min-width: 480px) {
-  .page-content{
-    padding: 0 50px;
-  }
-  .post-item{
-    width: 50%
-  }
-}
-@media (min-width: 992px) {
-  .page-content{
-
-  }
-  .post-item{
-    width: 33.3%
-  }
-}
-@media (min-width: 1200px) {
-  .page-content{
-    max-width: 1200px;
-  }
-  .post-item{
-    width: 25%
-  }
-  
-}
 </style>

@@ -1,48 +1,37 @@
-<style>
-body,
-*{
-  box-sizing: border-box;
-  font-family: 'Hind', sans-serif!important;
-}
-.page-content {
-  padding: 0 20px;
-}
-</style>
-
 <template>
   <div id="app">
-    <!-- <img src="./assets/logo.png"> -->
     <router-view/>
-   
   </div>
 </template>
 
 <script>
-import 'reset-css';
-export default {
-  name: 'App',
-  data(){
-    return{
-      
+  import 'reset-css';
+  export default {
+    name: 'App',
+    data() {
+      return {
+
+      }
+    },
+    methods: {
+
     }
-  },
-  methods:{
-    
   }
-}
+
 </script>
 
 <style scoped>
-#app {
+  #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
   color: #2c3e50;
-  margin-top: 60px;
+  padding-top: 60px;
 }
 a {
   cursor: pointer;
   color: #42b983;
 }
+ 
+
 </style>

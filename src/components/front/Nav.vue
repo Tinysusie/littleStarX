@@ -2,7 +2,10 @@
   <header class="page-header">
       <div class="header-logo">
         <div class="left"></div>
-        <h2 class="logo"><img title="logo" src="../../assets/img/logo.png"/></h2>
+        <h2 class="logo">
+          <a class="logo-text">LITTLESTAR</a>
+            <!-- <img title="logo" src="../../assets/img/logo.png"/> -->
+          </h2>
         <div class="right">
           <el-button @click="toLogin" type="danger" size="small" circle ><i class="el-icon-location"></i></el-button>
         </div>
@@ -43,6 +46,11 @@ export default {
   display: flex;
   align-items:center;
   margin-bottom: 50px;
+}
+.logo-text{
+  font-size: 32px;
+  font-weight: 1000;
+  color: black;
 }
 .header-logo .logo{
   text-align: center;

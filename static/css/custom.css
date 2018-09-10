@@ -1,0 +1,45 @@
+html,body,#app{
+    height: 100%;
+}
+body,
+*{
+  box-sizing: border-box;
+  font-family: 'open-sans','Hind', sans-serif!important;
+}
+.page-content{
+    width: 100%;
+    margin: 0 auto 30px;
+  }
+
+@media (max-width: 620px) {
+    .page-content{
+      padding: 0 30px;
+    }
+    .masonry-layout .post-item.masonry-grid{
+      width: 100%
+    }
+  }
+  @media (min-width: 620px) {
+    .page-content{
+      padding: 0 50px;
+    }
+    .masonry-layout .post-item.masonry-grid{
+      width: 50%
+    }
+  }
+  @media (min-width: 992px) {
+    .page-content{
+      padding: 0 20px;
+    }
+    .masonry-layout .post-item.masonry-grid{
+      width: 33.3%
+    }
+  }
+  @media (min-width: 1200px) {
+    .page-content{
+      max-width: 1200px;
+    }
+    .masonry-layout .post-item.masonry-grid{
+      width: 25%
+    }
+  }

@@ -99,7 +99,7 @@ app.post('/article/addPost',function(req,res){
         let atc = req.body
         let postObj = {
             title:atc.title,
-            subtitle:'SUBTITLE',
+            subtitle:atc.subTitle,
             content:atc.content,
             mainImg:atc.mainImg,
             author:randomName(),
@@ -133,7 +133,7 @@ app.post('/article/updatePost',function(req,res){
 
         let postObj = {
             title:atc.title,
-            subtitle:'SUBTITLE',
+            subtitle:atc.subTitle,
             content:atc.content,
             mainImg:atc.mainImg,
             author:randomName(),
