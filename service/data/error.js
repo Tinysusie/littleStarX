@@ -4,5 +4,4 @@ module.exports={
     login:true,
     success:false,
     data:[],
-
 }
