@@ -78,18 +78,18 @@ app.use('*',function(req,res,next){ //* 匹配放最后
             req.session._garbage = Date();
             req.session.touch();
             next();
-        }else if(!userSessionObj || !userSessionObj.login){
-            let UNloginObj = {
-                login:false,
-                msg:'need login'
-            }
-            let sendata = ResCls(UNloginObj);
-            res.send(JSON.stringify(sendata));
         }else if(leftTime<=0){
             let UNloginObj = {
                 login:false,
                 msg:'time out',
                 code:3
+            }
+            let sendata = ResCls(UNloginObj);
+            res.send(JSON.stringify(sendata));
+        }else if(!userSessionObj || !userSessionObj.login){
+            let UNloginObj = {
+                login:false,
+                msg:'need login'
             }
             let sendata = ResCls(UNloginObj);
             res.send(JSON.stringify(sendata));
