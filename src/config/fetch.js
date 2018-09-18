@@ -79,10 +79,53 @@ if(window.fetch && method == 'fetch'){
                 }
             } catch(error){
                 //console.log("统一错误")
-                //console.log(error)
+                console.log(error)
                 //throw new Error(error) 【】?
                 throw error
             }
         }
 
     }
+
+    //-=-=-=-=
+// $.ajax({
+//     url:'',
+//     dataType:"json",
+//     success:function(data){
+  
+//     },
+//     error:function(e){
+  
+//     }
+//   });
+  
+//   $.post('url',{},function(data){
+  
+//   })
+//   $.load('url',{},callback(function(esponseText, textStatus, XMLHttpRequest){}))
+  
+  
+//   let ajax = new XMLHttpRequest();
+//   ajax.open('GET','/url',"aysnc");
+//   ajax.setRequestHeader('Content-type',"json")
+//   ajax.send('');
+//   ajax.onreadystatechange = function(){
+//     if(ajax.readyState === 4 &&ajax.status == 200){
+//       //... ajax.responseText
+//     }
+//   }
+//   var xmlhttp;
+//   function loadXmlR(url,cfunc){
+//     xmlhttp = new XMLHttpRequest();
+//     xmlhttp.onreadystatechange = cfunc;
+//     xmlhttp.open('GET',url,true);
+//     xmlhttp.send();
+//   }
+//   function myFunc(){
+//     loadXmlR('../url',function(){
+//       //xmlhttp.responseText
+//     })
+//   }
+//   myFunc()
+  
+  //=-=-=-=-=-

@@ -7,7 +7,9 @@
             <!-- <img title="logo" src="../../assets/img/logo.png"/> -->
           </h2>
         <div class="right">
-          <el-button @click="toLogin" type="danger" size="small" circle ><i class="el-icon-location"></i></el-button>
+          <el-button @click="toLogin" title="登录" type="danger" size="small" circle ><i class="el-icon-location"></i></el-button>
+           <router-link title="Post" v-if="this.$root.role===2" tag="button" class="el-button el-button--danger el-button--small is-circle" 
+              :to="{path:'EditPost',query:{type:0}}"><i class="el-icon-edit"></i></router-link>
         </div>
       </div>
       
@@ -39,8 +41,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .page-header {
-  padding: 0 20px;
-  margin-bottom: 30px;
+  padding: 0 20px 30px 0;
 }
 .header-logo{
   display: flex;

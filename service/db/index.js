@@ -14,7 +14,7 @@ function _connectDB(callback){
 
 module.exports = {
     insertOne(collectionName,json,callback){ //inser data
-        _connectDB(function(err,db){
+        _connectDB((err,db)=>{
             db.collection(collectionName).insertOne(json,function(err,result){
                 if(err) throw err;
                 console.log("DB ADD ！");
@@ -23,8 +23,17 @@ module.exports = {
         })
     },
     find(collectionName,json,callback){ //find
+        //console.log("arguments")
+        //console.log(arguments.length);
+        let limit = json.pageSize || 9999,skip = json.pageSize * (json.currentPage-1)||0,sort=json.sort||{};
+        delete json.pageSize;
+        delete json.currentPage;
+        delete json.sort;
+        //console.log(json)
         _connectDB((err,db) =>{
-            db.collection(collectionName).find(json).toArray(function(err, result){
+            db.collection(collectionName).find(json)
+            .limit(limit).skip(skip).sort(sort)
+            .toArray(function(err, result){
                 if(err) throw err;
                 console.log("DB FIND ！");
                 callback(err,result);
@@ -51,7 +60,7 @@ module.exports = {
     },
     getAllCount(collectionName,callback) {
         _connectDB((err,db)=>{
-            db.collection(collectionName).count({}).then(function(count){
+            db.collection(collectionName).countDocuments({}).then(function(count){
                 callback(count);
             })
         })

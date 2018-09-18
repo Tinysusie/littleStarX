@@ -48,6 +48,8 @@ export default {
           }
           loginAPI.login(param)
           .then(data =>{
+              document.cookie = 'littleXislogin=true;'
+              this.$root.checkRole()
               this.$router.push({path:'/home'});
           }).catch(err=>{
               // if(err.code===2){ //在全局控制那

@@ -6,8 +6,7 @@
       <hr> -->
       <div class="masonry-layout" v-loading="postLoading" 
       element-loading-text="loading"
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(0, 0, 0, 0.8)">
+      element-loading-spinner="el-icon-loading">
         <div v-for="item in dataList" :key="item.id" class="masonry-grid post-item">
           <div class="post-item-inner">
             <img class="entry-img" :src="item.mainImg">
@@ -17,12 +16,10 @@
               <p class="post-info">BY {{item.author}}，{{$moment(item.time).format('YYYY/MM/DD HH:mm')}} </p>
               <!-- <section>{{item.subtitle}}</section> -->
               <section class="post-subtitle" v-html="item.subtitle"></section>
-              
-                
               <div class="admin-action">
-                <router-link tag="button" class="el-button el-button--text el-button--small" 
+                <router-link v-if="role===2" tag="button" class="el-button el-button--text el-button--small" 
                 :to="{path:'EditPost',query:{type:1,id:item._id}}"><i class="el-icon-edit"></i>Edit</router-link>
-                <el-button type="text" size="mini" @click="delPost(item._id)"><i class="el-icon-delete"></i>Del</el-button>
+                <el-button v-if="role===2" type="text" size="mini" @click="delPost(item._id)"><i class="el-icon-delete"></i>Del</el-button>
                 <router-link tag="button" class="el-button el-button--text el-button--small more" 
                 :to="{path:'articleDetail',query:{id:item._id}}"> More <i class="el-icon-more"></i></router-link>
               </div>
@@ -46,6 +43,9 @@ export default {
       dataList:[],
       JsonPData:{},
       postLoading:false,
+      pageSize:5,
+      currentPage:1,
+      total:0,
     }
   },
   mounted:function(){
@@ -53,10 +53,20 @@ export default {
     //window.addEventListener('resize',this.styleMasonry)
     window.onresize = _=>{
       this.styleMasonry()
-    }
+    };
+    this.$root.callBackScrollLoad = this.scrollLoad
   },
   beforeDestroy:function(){
-    window.onresize = null
+    window.onresize = null;
+    this.$root.callBackScrollLoad = null
+  },
+  computed:{
+    ScrollTop:function(){
+      return this.$root.scrollTop
+    },
+    role:function(){
+      return this.$root.role
+    }
   },
   methods:{
     getInfoByJSONP(){
@@ -66,6 +76,18 @@ export default {
         this.JsonPData = result
       })
 
+    },
+    scrollLoad(){
+      let ClientH = document.body.clientHeight || document.documentElement.clientHeight; 
+      //let ScrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      let ContentH = document.querySelector('.masonry-layout-wrapper').offsetHeight;
+      let headerH = document.querySelector('.page-header').offsetHeight;
+      let ContentAll = ClientH + this.ScrollTop - headerH;
+      //console.log(ContentH - ContentAll ,this.dataList.length , this.total)
+      if(ContentH - ContentAll<=50 && this.dataList.length < this.total && this.canScroll){
+        this.currentPage++
+        this.getData()
+      }
     },
     delPost(id){
      // this.$confirm('确定删除吗？','删除',{
@@ -88,43 +110,35 @@ export default {
       
     },
     getData(){
+      this.canScroll = false
       this.postLoading = true;
       let param = {
-        id:"kj"
+        pageSize:this.pageSize,
+        currentPage:this.currentPage,
       }
       ArticleAPI.getArticle(param)
       .then(data =>{
-        // this.dataList = data.data; //直接出内容
-        // this.$nextTick(_=>{
-        //   this.styleMasonry()
-        // });
-        this.preLoadImg(data.data)
+        this.total = data.data.total;
+        this.preLoadImg(data.data.list)
         .then(result=>{
           if(result.indexOf(false) == -1){
-            this.dataList = data.data;
+            if(this.currentPage == 1){
+              this.dataList = data.data.list;
+            }else {
+              this.dataList = this.dataList.concat(data.data.list);
+            }
             this.$nextTick(_=>{
               this.styleMasonry();
               this.postLoading = false;
+              this.canScroll = true
             });
           }
         })
       }).catch(e =>{
        //console.log(e)
+        this.canScroll = true
         this.postLoading = false;
       })
-    },
-    preLoadImg1(){
-      // for(let i=0;i<this.dataList.length;i++){
-      //   let imgsrc = '../../../static/img/'+ Math.round(Math.random()*3+1) +'.jpg'
-      //   let imgObj = new Image();
-      //   imgObj.src = imgsrc
-      //   imgObj.onload = _=>{
-      //     this.$set(this.dataList[i],"img",imgsrc) 
-      //   }
-      // }
-      //this.$nextTick(_=>{
-        this.styleMasonry()
-      //})
     },
     preLoadImg(data){
       let imgArr = [];
@@ -147,39 +161,40 @@ export default {
       )
     },
     styleMasonry(){
-      //let grid = 3;
       let posts = document.querySelectorAll('.masonry-grid');
-      let postW = Math.floor(posts[0].offsetWidth);
-      let PW = document.querySelector('.masonry-layout')
-      let winCW = PW.offsetWidth; 
-      let grid = Math.round(winCW/postW)
-      //console.log(winCW,postW,grid)
-      //let cellW = parseInt(winCW/grid);
-      let arr = []; //记录最矮的一个
-      for(let i=0;i<this.dataList.length;i++){
-          if(i < grid){ //row 1
-            posts[i].style.top = 0;
-            posts[i].style.left = postW * i + 'px';
-            arr.push(posts[i].offsetHeight);
-            
-          }else { //row other
-            var minH = arr[0];
-            var index = 0;
-            for(let j = 0;j<arr.length;j++){ //find minH
-              if(minH > arr[j]){
-                minH = arr[j]
-                index = j;
+      if(posts && posts.length>0){
+        let postW = Math.floor(posts[0].offsetWidth);
+        let PW = document.querySelector('.masonry-layout')
+        let winCW = PW.offsetWidth; 
+        let grid = Math.round(winCW/postW)
+        //console.log(winCW,postW,grid)
+        //let cellW = parseInt(winCW/grid);
+        let arr = []; //记录最矮的一个
+        for(let i=0;i<this.dataList.length;i++){
+            if(i < grid){ //row 1
+              posts[i].style.top = 0;
+              posts[i].style.left = postW * i + 'px';
+              arr.push(posts[i].offsetHeight);
+              
+            }else { //row other
+              var minH = arr[0];
+              var index = 0;
+              for(let j = 0;j<arr.length;j++){ //find minH
+                if(minH > arr[j]){
+                  minH = arr[j]
+                  index = j;
+                }
               }
+              //console.log(i,index)
+              posts[i].style.top = arr[index] + 'px' 
+              posts[i].style.left = posts[index].style.left  //== style.left(带有px) 相对于其父元素的值
+              arr[index] = arr[index] + posts[i].offsetHeight;
+              
             }
-            //console.log(i,index)
-            posts[i].style.top = arr[index] + 'px' 
-            posts[i].style.left = posts[index].style.left  //== style.left(带有px) 相对于其父元素的值
-            arr[index] = arr[index] + posts[i].offsetHeight;
-            
-          }
+        }
+        let wrapperH = Math.max(...arr)
+        PW.style.minHeight = wrapperH + 'px';
       }
-      let wrapperH = Math.max(...arr)
-      PW.style.minHeight = wrapperH + 'px';
     },
   }
 }

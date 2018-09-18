@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(session({
     //name:'id',
     secret:'keyPCat',
-    cookie:{maxAge:30000},
+    cookie:{maxAge:6000},
     resave: false,
     saveUninitialized: false
 }));
@@ -74,26 +74,34 @@ app.use('*',function(req,res,next){ //* 匹配放最后
         let leftTime = req.session.cookie.maxAge
         let userSessionObj = req.session.curUser
         console.log('-----------------------',userSessionObj,req.sessionID,req.baseUrl,userSessionObj,leftTime)
+        console.log(req.cookies.littleXislogin)
         if(userSessionObj && userSessionObj.login && leftTime>0){ 
             req.session._garbage = Date();
             req.session.touch();
             next();
         }else if(leftTime<=0){
-            let UNloginObj = {
-                login:false,
-                msg:'time out',
-                code:3
-            }
-            let sendata = ResCls(UNloginObj);
-            res.send(JSON.stringify(sendata));
+            res.cookie("littleXislogin","false")
+            // let UNloginObj = {
+            //     login:false,
+            //     msg:'time out',
+            //     code:3
+            // }
+            // let sendata = ResCls(UNloginObj);
+            // res.send(JSON.stringify(sendata));
+            next(mg)
         }else if(!userSessionObj || !userSessionObj.login){
-            let UNloginObj = {
-                login:false,
-                msg:'need login'
-            }
-            let sendata = ResCls(UNloginObj);
-            res.send(JSON.stringify(sendata));
+            res.cookie("littleXislogin","false")
+            // let UNloginObj = {
+            //     login:false,
+            //     msg:'need login'
+            // }
+            // let sendata = ResCls(UNloginObj);
+            // res.send(JSON.stringify(sendata));
+            next()
         }
+        // req.session._garbage = Date();
+        // req.session.touch();
+        //next();
     }else {
         next();
     }
@@ -103,13 +111,24 @@ app.post('/upload',upload.array('pic1',10),function(req,res,next){
 })
 
 app.post('/article/getList',function(req,res){
-    DB.find('post',{},function(err,result){
+    
+    let queryObj = {
+        //sort:{time:-1},
+    }
+    queryObj = Object.assign(queryObj,req.body)
+    DB.find('post',queryObj,function(err,result){
         if (err) throw err;
-        let Obj = {
-            data : result
-        }
-        let resData = ResCls(Obj)
-        res.send(JSON.stringify(resData))
+        DB.getAllCount('post',function(count){
+            let Obj = {
+                data : {
+                    list:result,
+                    total:count
+                }
+            }
+            let resData = ResCls(Obj)
+            res.send(JSON.stringify(resData))
+            
+        })
     })
 })
 app.post('/article/getPost',function(req,res){
@@ -177,7 +196,8 @@ app.post('/article/updatePost',function(req,res){
             author:randomName(),
             posttatus:'1',
             category:'1',
-            time:new Date(),
+            //time:new Date(),
+            updateTime:new Date(),
             count:3015,
         }
         DB.updateMany('post',targetId,{$set:postObj},function(err,result){
