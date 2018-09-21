@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script> -->
+    <style>
+        circle {
+            -webkit-transition: stroke-dasharray .25s;
+            transition: stroke-dasharray .25s;
+        }
+    </style>
+</head>
+<body>
+        <svg width="220" height="220" viewbox="0 0 200 200">
+            <circle cx="100" cy="100" r="90" stroke-width="5" stroke="#D1D3D7" fill="none"></circle>
+            <circle id="circle" cx="100" cy="100" r="90" stroke-width="5" stroke="#99cc01" fill="none"
+             transform="matrix(0,-1,1,0,0,200)" stroke-dasharray="0 1069"></circle>
+        </svg>
+        <input id="range" type="range" min="0" max="60" value="0">
+</body>
+<script>
+    let range = document.getElementById('range'),circle = document.getElementById('circle');
+    if(range && circle){
+        range.addEventListener('change',function(){
+            var per = this.value/60,perimeter = Math.PI*90*2;
+            console.log(this.value/60,perimeter)
+            circle.setAttribute('stroke-dasharray',perimeter*per+' '+perimeter)
+        })
+    }
+</script>
+</html>

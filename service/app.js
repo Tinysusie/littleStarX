@@ -74,7 +74,7 @@ app.use('*',function(req,res,next){ //* 匹配放最后
         let leftTime = req.session.cookie.maxAge
         let userSessionObj = req.session.curUser
         console.log('-----------------------',userSessionObj,req.sessionID,req.baseUrl,userSessionObj,leftTime)
-        console.log(req.cookies.littleXislogin)
+        //console.log(req.cookies.littleXislogin)
         if(userSessionObj && userSessionObj.login && leftTime>0){ 
             req.session._garbage = Date();
             req.session.touch();
