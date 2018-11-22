@@ -42,6 +42,24 @@
 <script src="http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js"></script>
 <script src="../config/untils.js"></script>
 <script>
+    //jQ .offset() .position()
+// targetDom为fixed的时候需要另外处理（不适用此方法）=>得到的时相对于浏览器窗口的值
+
+   var getOffset = function(targetDom){
+        let target = targetDom,top = targetDom.offsetTop,left = targetDom.offsetLeft;
+
+        // console.log(target.offsetParent)
+        while(target.offsetParent){
+            target = target.offsetParent
+            top += target.offsetTop;
+            left += target.offsetLeft;
+        }
+
+        return {
+            "top":top,
+            "left":left
+        }
+    }
     //jQ .offset()的top是指元素与document的上边的距离，而不是浏览器当前窗体的上边缘
     //如果浏览器出现滚动条，需要考虑scrolltop的高度
     //jS .offsetTop //到包容父级的边框间的距离 定位不为static的第一个父祖级

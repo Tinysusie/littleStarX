@@ -160,6 +160,26 @@ export default {
         })
       )
     },
+    promiseImg(data){
+      let srcArry = []
+      return Promise.all(data.map((item,i)=>{
+        srcArry[i] = new Image();
+        srcArry[i].src = item.src;
+        srcArry[i].loaded = false;
+        return new Promise((resolve,reject)=>{
+          srcArry[i].onload = ()=>{
+            srcArry[i].loaded = true;
+            resolve(srcArry[i].loaded)
+          };
+          srcArry[i].onerror = ()=>{
+            srcArry[i].onload = true;
+            resolve(imgArr[i].loaded)
+          }
+        })
+      
+      })
+      )
+    },
     styleMasonry(){
       let posts = document.querySelectorAll('.masonry-grid');
       if(posts && posts.length>0){

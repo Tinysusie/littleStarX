@@ -1,6 +1,7 @@
 import {baseUrl} from './env.js'
 import { Message } from 'element-ui';
 import $router from '../router/index.js'
+import { resolve } from 'url';
 
 export default async(url = '',data ={}, type='POST',  formData="",method ='fetch') => {
     //console.log(data,type)
@@ -129,3 +130,36 @@ if(window.fetch && method == 'fetch'){
 //   myFunc()
   
   //=-=-=-=-=-
+//promise
+  function getAjax(url){
+      return new Promise((resolve,reject) => {
+          let req = new XMLHttpRequest();
+          req.open('GET',url,true);
+          req.onreadystatechange = function(){
+              if(req.readyState == 4 && req.status == 200){
+                  resolve(req.responseText);
+              }else {
+                  reject(req.responseText);
+              }
+          };
+          req.send();
+      })
+  };
+
+  getAjax("/url").then(data=>{
+
+  }).catch(e =>{});
+
+//deepCopy
+    function deepCopy(p,c){
+        var c = c || {};
+        for(var i in p){
+            if(typeof p[i] === 'object'){
+                c[i] = (p[i].constructor === 'Array')?[]:{};
+                deepCopy(p[i],c[i]);
+            }else {
+                c[i] = p[i];
+            }
+        }
+        return c;
+    }
