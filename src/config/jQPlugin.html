@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>JQ Plugin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .item {
+            border:1px dashed #eee;
+            width: 33.3%;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="item" style="height:200px">
+            
+        </div>
+        <div class="item" style="height:100px">
+            
+        </div>
+        <div class="item" style="height:120px">
+            
+        </div>
+        <div class="item" style="height:150px">
+            
+        </div>
+        <div class="item" style="height:120px">
+            
+        </div>
+        <div class="item" style="height:180px">
+            
+        </div>
+        <div class="item" style="height:170px">
+            
+        </div>
+    </div>
+    <div>
+        <!-- <p>哈哈哈</p>
+        <span>111</span> -->
+    </div>
+</body>
+<script src="http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js"></script>
+<script src="../assets/myMasory/masory.js"></script>
+<script>
+// pic hover shadow
+
+;(function($,window,document,undefined){
+    function PicLayConstr(el,opts){
+        this.$elements = el;
+        this.default = {
+            color:"#9900c1",
+            textDecoration:'underline'
+        };
+        this.options = $.extend({},this.default,opts)
+    }
+    PicLayConstr.prototype = {
+        changeStyle:function(){
+            return this.$elements.css({
+                color:this.options.color,
+                textDecoration:this.options.textDecoration
+            })
+        }
+    }
+
+    $.fn.picMasory = function(opts){
+        //此处this指代比较重要
+        var picLay = new PicLayConstr(this,opts);
+        return picLay.changeStyle();
+    }
+})(jQuery,window,document);
+
+
+
+$('document').ready(function(){
+    // var opts = {
+    //     color:"#2196f3",
+    //     textDecoration:'none'
+    // };
+    // $('p').picMasory(opts)
+    $('.wrapper').masory({
+        itemSelector:'.item'
+    })
+
+})
+</script>
+</html>
